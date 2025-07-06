@@ -1,0 +1,71 @@
+services:  
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: sync
+          path: ./frontend/index.html
+          target: /app/index.html
+        - action: sync
+          path: ./frontend/public
+          target: /app/public
+        - action: rebuild
+          path: ./frontend/package.json
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      args:
+        - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    depends_on:
+       - pocketbase
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./backend/package.json  
+  pocketbase:
+    build:
+      context: ./pocketbase
+      args:
+        - PB_VERSION=0.28.1
+        - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin12345}
+      - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    healthcheck: # optional, recommended since v0.10.0
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+      interval: 60s
+      timeout: 20s
+      retries: 5
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: rebuild
+          path: ./pocketbase/pb_migrations
+          target: /pb_data/migrations
+        - action: rebuild
+          path: ./pocketbase/pb_hooks
+          target: /pb_data/hooks

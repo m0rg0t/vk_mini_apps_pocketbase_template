@@ -1,0 +1,255 @@
+/* Общие стили */
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== БАННЕР ========== */
+.bannerHeader {
+  background-image: url('../../assets/panelheader.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  min-height: 200px;
+  padding: 0;
+  border-radius: 0 0 var(--border-radius-2xl) var(--border-radius-2xl);
+}
+
+.bannerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3xl) var(--spacing-lg) var(--spacing-2xl);
+  height: var(--button-size-sm) var(--spacing-xl);
+}
+
+.bannerTopTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-align: center;
+  flex: 1;
+  /* margin-left: 40px; */
+}
+
+.bannerTopButtons {
+  /* display: flex; */
+  gap: var(--spacing-sm);
+  align-items: center;
+  display: none;
+}
+
+.bannerButton {
+  width: var(--button-size-sm);
+  height: var(--button-size-sm);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-button-overlay);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.bannerContent {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.bannerTitle {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-loose);
+  letter-spacing: 0.33px;
+  text-align: center;
+  color: var(--color-text-primary);
+  margin: 0;
+  text-shadow: var(--shadow-text);
+}
+
+/* ========== СЕКЦИЯ ПРИВЕТСТВИЯ ========== */
+.welcomeCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  margin: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
+  padding: var(--container-padding);
+}
+
+.welcomeTop {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
+}
+
+.welcomeRow {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.welcomeName {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.booksIcon {
+  width: 54px;
+  height: 70px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.welcomeDescription {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-tight);
+  width: 80%;
+}
+
+/* ========== ОБЩИЕ СТИЛИ ДЛЯ КАРТОЧЕК ========== */
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap);
+  margin: var(--container-margin);
+  padding: 0;
+}
+
+.cardHeader {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========== СЕКЦИЯ ПОИСКА ========== */
+.addBookCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap);
+  margin: var(--container-margin);
+  padding: 0;
+}
+
+.addBookCardHeader {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-relaxed);
+}
+
+.addBookCard :global(.vkuiSearch__input),
+.addBookCard :global(.vkuiSearch__nativeInput) {
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+}
+
+.addBookCard :global(.vkuiSearch__input) {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  padding-right: 8px !important;
+}
+
+.addBookCard :global(.vkuiSearch__nativeInput) {
+  padding-left: 8px !important;
+}
+
+.addBookCard :global(.vkuiSearch__icon) {
+  width: 28px !important;
+}
+
+.addBookCard :global(.vkuiSearch__input::placeholder) {
+  white-space: normal;
+  text-overflow: unset;
+  overflow: visible;
+}
+
+/* ========== ДОСТИЖЕНИЯ ========== */
+.achievementsCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap);
+  margin: var(--container-margin);
+  padding: 0;
+}
+
+.achievementsHeader {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-relaxed);
+}
+
+.achievementsGroup {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: 0;
+}
+
+.achievementCard {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-brand-primary);
+  background: var(--color-brand-light);
+  overflow: hidden;
+  padding: var(--container-padding) 0;
+}
+
+.achievementContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 0;
+}
+
+.achievementIcon {
+  color: var(--color-brand-primary);
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.achievementNumber {
+  color: #000;
+  text-align: center;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+  line-height: 40px;
+}
+
+.achievementLabel {
+  color: #000;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+/* Скелетоны для достижений */
+.achievementNumberSkeleton {
+  margin: 0 auto;
+}
+
+.achievementLabelSkeleton {
+  margin: 0 auto;
+}

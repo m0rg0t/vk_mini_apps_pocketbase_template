@@ -1,0 +1,132 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+
+// Mock VK Bridge
+vi.mock('@vkontakte/vk-bridge', () => ({
+  default: {
+    send: vi.fn(),
+  },
+}));
+
+// Mock useUserBadges hook
+vi.mock('../useUserBadges', () => ({
+  useUserBadges: () => ({
+    refetchUserBadges: vi.fn(),
+  }),
+}));
+
+import { useInviteFriend } from '../useInviteFriend';
+
+// Mock fetch
+global.fetch = vi.fn();
+
+// Mock environment variables
+vi.stubEnv('VITE_VK_APP_ID', '53603553');
+vi.stubEnv('VITE_BACKEND_URL', 'http://localhost:3000');
+
+describe('useInviteFriend', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should return initial state', () => {
+    const { result } = renderHook(() => useInviteFriend('user123'));
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBe(null);
+    expect(typeof result.current.inviteFriend).toBe('function');
+  });
+
+  it('should return error when userId is not provided', async () => {
+    const { result } = renderHook(() => useInviteFriend());
+
+    await act(async () => {
+      const inviteResult = await result.current.inviteFriend();
+      expect(inviteResult.success).toBe(false);
+      expect(inviteResult.error).toBe('User ID is required for inviting friends');
+    });
+
+    expect(result.current.error).toBe('User ID is required for inviting friends');
+  });
+
+  it('should handle successful invitation with badge award', async () => {
+    const userId = 'user123';
+    
+    // Mock VK Bridge success
+    const vkBridge = await import('@vkontakte/vk-bridge');
+    const mockSend = vi.mocked(vkBridge.default.send);
+    mockSend.mockResolvedValue([{ type: 'VKWebAppShareResult' }] as unknown[]);
+    
+    // Mock fetch success
+    const mockFetch = vi.mocked(fetch);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        success: true,
+        badgeAwarded: true,
+        message: 'Бейдж за приглашение друга успешно выдан!'
+      }),
+    } as Response);
+
+    const { result } = renderHook(() => useInviteFriend(userId));
+
+    let inviteResult;
+    await act(async () => {
+      inviteResult = await result.current.inviteFriend();
+    });
+
+    expect(inviteResult?.success).toBe(true);
+    expect(inviteResult?.badgeAwarded).toBe(true);
+    expect(mockSend).toHaveBeenCalledWith('VKWebAppShare', {
+      link: 'https://vk.com/app53603553#/',
+    });
+  });
+
+  it('should handle VK Bridge failure', async () => {
+    const userId = 'user123';
+    
+    // Mock VK Bridge failure
+    const vkBridge = await import('@vkontakte/vk-bridge');
+    const mockSend = vi.mocked(vkBridge.default.send);
+    mockSend.mockResolvedValue([] as unknown[]);
+
+    const { result } = renderHook(() => useInviteFriend(userId));
+
+    let inviteResult;
+    await act(async () => {
+      inviteResult = await result.current.inviteFriend();
+    });
+
+    expect(inviteResult?.success).toBe(false);
+    expect(inviteResult?.error).toBe('Не удалось отправить приглашение');
+    expect(result.current.error).toBe('Не удалось отправить приглашение');
+  });
+
+  it('should handle badge API error gracefully', async () => {
+    const userId = 'user123';
+    
+    // Mock VK Bridge success
+    const vkBridge = await import('@vkontakte/vk-bridge');
+    const mockSend = vi.mocked(vkBridge.default.send);
+    mockSend.mockResolvedValue([{ type: 'VKWebAppShareResult' }] as unknown[]);
+    
+    // Mock fetch failure
+    const mockFetch = vi.mocked(fetch);
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+    } as Response);
+
+    const { result } = renderHook(() => useInviteFriend(userId));
+
+    let inviteResult;
+    await act(async () => {
+      inviteResult = await result.current.inviteFriend();
+    });
+
+    // Should still be successful since share worked
+    expect(inviteResult?.success).toBe(true);
+    expect(inviteResult?.badgeAwarded).toBe(false);
+    expect(inviteResult?.message).toBe('Приглашение отправлено, но произошла ошибка при выдаче бейджа');
+  });
+});

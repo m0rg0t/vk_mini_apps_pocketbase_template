@@ -1,0 +1,35 @@
+{
+  "name": "universal-mini-app-template",
+  "version": "1.0.0",
+  "description": "Universal template for creating VK and Telegram mini applications",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "./start-dev.sh",
+    "build": "docker-compose build",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "restart": "docker-compose restart"
+  },
+  "keywords": [
+    "vk",
+    "telegram",
+    "mini-app",
+    "template",
+    "universal",
+    "react",
+    "pocketbase",
+    "express"
+  ],
+  "author": "Universal Mini App Template",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/universal-mini-app-template.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

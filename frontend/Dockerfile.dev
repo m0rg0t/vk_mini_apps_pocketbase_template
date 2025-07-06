@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+# Copy source code (will be overridden by docker-compose volume for development)
+COPY . .
+
+ARG PORT=80
+ENV PORT=$PORT
+
+EXPOSE $PORT
+
+# Run in development mode with host binding
+CMD ["npm", "run", "dev"]

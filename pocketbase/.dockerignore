@@ -1,0 +1,24 @@
+# Version control
+.git
+.github
+.gitignore
+
+# Documentation
+README.md
+docs
+
+# Docker files (except Dockerfile itself)
+docker-compose*
+
+# Development files
+.vscode
+.idea
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# We don't want to copy existing data when building the image
+# That will be mounted as a volume instead
+pb_data
+# pb_public

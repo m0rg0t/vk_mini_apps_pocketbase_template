@@ -1,0 +1,45 @@
+.tabbar {
+  position: fixed;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content;
+  background-color: var(--color-background-card);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-2xl);
+  z-index: 1000;
+  display: flex;
+  gap: 0;
+  box-shadow: var(--shadow-tapbar);
+}
+
+.tabbarItem {
+  display: flex;
+  width: 80px;
+  padding: var(--spacing-sm);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--border-radius-xl);
+}
+
+.tabbarItem.active {
+  background-color: var(--color-brand-light);
+}
+
+.tabbarItem span {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  margin: 0;
+}
+
+.tabbarItem.active span {
+  color: var(--color-brand-secondary);
+}

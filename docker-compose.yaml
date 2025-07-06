@@ -1,0 +1,53 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL:-http://backend:3000}
+        - VITE_POCKETBASE_URL=${VITE_POCKETBASE_URL:-http://pocketbase:8080}
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    environment:
+      - PORT=80    depends_on:
+      - backend
+    restart: unless-stopped
+    labels:
+      - traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Origin=*
+      - traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Methods=GET,POST,OPTIONS
+      - traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Headers=*
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - POCKETBASE_URL=${POCKETBASE_URL:-http://pocketbase:8080}
+        - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - POCKETBASE_URL=${POCKETBASE_URL:-http://pocketbase:8080}
+      - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    depends_on:
+      - pocketbase
+    restart: unless-stopped
+  pocketbase:
+    build:
+      context: ./pocketbase
+      args:
+        - PB_VERSION=0.28.1
+        - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin12345}
+      - POCKETBASE_BEARER_TOKEN=${POCKETBASE_BEARER_TOKEN:-}
+      - PORT=8080
+    volumes:
+      - pocketbase_data:/home/pocketbase/app/pb_data
+    ports:
+      - "${POCKETBASE_PORT:-8090}:8080"
+    restart: unless-stopped
+volumes:
+  pocketbase_data:

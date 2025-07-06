@@ -1,0 +1,1 @@
+export const VKAPP_ENTRY_KEY = "vkapp_entry";

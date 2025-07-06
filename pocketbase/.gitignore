@@ -1,0 +1,7 @@
+.env
+.env.local
+.env.development.local
+pb_data
+pb_data/auxiliary.db
+
+.idea

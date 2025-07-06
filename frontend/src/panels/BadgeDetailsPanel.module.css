@@ -1,0 +1,161 @@
+/* BadgeDetailsPanel стили */
+.badgeDetailContainer {
+  padding: 0;
+  min-height: 100vh;
+  background: var(--color-background-primary);
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-4xl) 0;
+}
+
+.errorContainer {
+  padding: var(--spacing-xl);
+  text-align: center;
+}
+
+.errorText {
+  color: var(--color-error);
+  font-size: var(--font-size-base);
+}
+
+.contentContainer {
+  padding: var(--container-padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  margin-bottom: 120px;
+}
+
+.badgeImageContainer {
+  width: 170px;
+  height: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--border-radius-lg);
+  background: var(--color-background-card);
+  box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.08), 0px 2px 24px 0px rgba(0, 0, 0, 0.08);
+}
+
+.badgeImage {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.badgeImageGrayscale {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.badgeName {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-style: normal;
+  font-weight: 700;
+  line-height: var(--line-height-loose);
+}
+
+.progressSection {
+  width: 100%;
+}
+
+.progressText {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-sm);
+  text-align: right;
+}
+
+.progressBar {
+  width: 100%;
+  height: var(--spacing-sm);
+  background-color: var(--color-divider-light);
+  border-radius: var(--border-radius-xs);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--color-brand-primary);
+  border-radius: var(--border-radius-xs);
+}
+
+.requirementsSection {
+  width: 100%;
+}
+
+.requirementsTitle {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-style: normal;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-sm);
+}
+
+.requirementsDescription {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: normal;
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
+}
+
+.notFoundContainer {
+  padding: var(--spacing-xl);
+  text-align: center;
+}
+
+.notFoundText {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.shareButton {
+  width: 350px;
+  margin: 0 auto;
+  background: #5ac583;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 22px;
+  color: #fff;
+  padding: var(--spacing-lg);
+  min-height: 52px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  font-style: normal;
+  margin-top: var(--spacing-md);
+}
+
+.shareButton:hover {
+  background: #4fb574;
+  transform: translateY(-1px);
+}
+
+.shareButton:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 525px) {
+  .shareButton {
+    width: 100%;
+    min-width: 0;
+    font-size: 15px;
+    min-height: 40px;
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-xs);
+  }
+}

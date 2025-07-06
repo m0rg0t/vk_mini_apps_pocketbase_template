@@ -1,0 +1,276 @@
+/* ========== ГЛОБАЛЬНЫЕ CSS ПЕРЕМЕННЫЕ ========== */
+
+:root {
+  /* ========== ОСНОВНЫЕ ЦВЕТА ========== */
+  --color-text-primary: #000;
+  --color-text-secondary: #818c99;
+  --color-text-tertiary: #888f95;
+  --color-white: #fff;
+  --color-background-primary: #fff;
+  --color-background-card: #fff;
+
+  /* ========== ЦВЕТА БРЕНДИНГА ========== */
+  --color-brand-primary: #5ac583;
+  --color-brand-secondary: #57be7e;
+  --color-brand-dark: #4bb34b;
+  --color-brand-light: #e8fff5;
+
+  /* ========== СЛУЖЕБНЫЕ ЦВЕТА ========== */
+  --color-rating-gold: #ffd700;
+  --color-rating-empty: #e5e5e5;
+  --color-divider: #d7d8d9;
+  --color-divider-light: #d9d9d9;
+  --color-error: #e64646;
+  --color-disabled: #c4c4c4;
+
+  /* ========== ФОНЫ И НАЛОЖЕНИЯ ========== */
+  --color-button-overlay: rgba(0, 0, 0, 0.12);
+  --color-overlay-white-light: rgba(255, 255, 255, 0.9);
+  --color-overlay-white-medium: rgba(255, 255, 255, 0.95);
+  --color-overlay-brand: rgba(75, 179, 75, 0.1);
+
+  /* ========== ШРИФТЫ ========== */
+  --font-family-primary: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-vk: 'VK Sans Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* ========== РАЗМЕРЫ ШРИФТОВ ========== */
+  --font-size-xs: 12px;
+  --font-size-sm: 15px;
+  --font-size-base: 16px;
+  --font-size-md: 17px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-icon-label: 18px; /* Для текста иконок */
+  --font-size-genre: 14px; /* Для жанров */
+
+  /* ========== ВЕСА ШРИФТОВ ========== */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 800;
+
+  /* ========== ВЫСОТА СТРОК ========== */
+  --line-height-tight: 20px;
+  --line-height-normal: 22px;
+  --line-height-relaxed: 24px;
+  --line-height-loose: 28px;
+  --line-height-genre: 14px; /* Для жанров и мелкого текста */
+
+  /* ========== ОТСТУПЫ ========== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 60px; /* Для больших отступов */
+  --spacing-genre-button: 2px 8px 4px; /* Специальный отступ для кнопок жанров */
+
+  /* ========== РАДИУСЫ СКРУГЛЕНИЯ ========== */
+  --border-radius-xs: 5px;
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --border-radius-xl: 12px;
+  --border-radius-2xl: 16px;
+  --border-radius-round: 50%; /* Для круглых элементов */
+
+  /* ========== ТЕНИ ========== */
+  --shadow-card: 0px 0px 2px 0px rgba(0, 0, 0, 0.08), 0px 2px 24px 0px rgba(0, 0, 0, 0.08);
+  --shadow-tapbar: 0px 2px 24px 0px rgba(0, 0, 0, 0.08), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
+  --shadow-text: 0 1px 2px rgba(255, 255, 255, 0.2);
+  --shadow-button: 0px 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-header: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+
+  /* ========== РАЗМЕРЫ ========== */
+  --button-size-sm: 28px;
+  --button-size-md: 32px;
+  --icon-size-xs: 14px;
+  --icon-size-sm: 20px;
+  --icon-size-md: 24px;
+  --avatar-size-lg: 72px;
+  --book-cover-width: 80px;
+  --book-cover-height: 80px;
+
+  /* ========== ПРОМЕЖУТКИ ДЛЯ КОНТЕЙНЕРОВ ========== */
+  --container-margin: 0 16px 20px;
+  --container-padding: 12px;
+  --container-gap: 16px;
+}
+
+/* ========== ТЕМНАЯ ТЕМА ========== */
+[data-appearance='dark'] {
+  /* ========== ОСНОВНЫЕ ЦВЕТА ========== */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9ca2aa;
+  --color-text-tertiary: #6d7885;
+  --color-white: #2d3748;
+  --color-background-primary: #19191a;
+  --color-background-card: #2d2d2e;
+
+  /* ========== СЛУЖЕБНЫЕ ЦВЕТА ========== */
+  --color-divider: #3a3a3c;
+  --color-divider-light: #424242;
+  --color-error: #ff5c5c;
+  --color-disabled: #5c5c5c;
+
+  /* ========== ФОНЫ И НАЛОЖЕНИЯ ========== */
+  --color-button-overlay: rgba(255, 255, 255, 0.12);
+  --color-overlay-white-light: rgba(45, 45, 46, 0.9);
+  --color-overlay-white-medium: rgba(45, 45, 46, 0.95);
+
+  /* ========== ТЕНИ ========== */
+  --shadow-card: 0px 0px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 24px 0px rgba(0, 0, 0, 0.3);
+  --shadow-tapbar: 0px 2px 24px 0px rgba(0, 0, 0, 0.3), 0px 0px 2px 0px rgba(0, 0, 0, 0.3);
+  --shadow-button: 0px 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-header: 0px 2px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== ОБЩИЕ КЛАССЫ ========== */
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.font-primary {
+  font-family: var(--font-family-primary);
+}
+
+.font-display {
+  font-family: var(--font-family-display);
+}
+
+.font-vk {
+  font-family: var(--font-family-vk);
+}
+
+/* ========== ЗАГОЛОВКИ ========== */
+.heading-xl {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-loose);
+  color: var(--color-text-primary);
+}
+
+.heading-lg {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+}
+
+.heading-md {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+/* ========== ТЕКСТ ========== */
+.text-base {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
+}
+
+.text-sm {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
+}
+
+.text-secondary-style {
+  color: var(--color-text-secondary);
+}
+
+/* ========== КАРТОЧКИ ========== */
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap);
+  margin: var(--container-margin);
+  padding: 0;
+}
+
+.card-base {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--container-padding);
+}
+
+/* ========== КНОПКИ ========== */
+.button-overlay {
+  width: var(--button-size-sm);
+  height: var(--button-size-sm);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-button-overlay);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+/* ========== ФЛЕКС УТИЛИТЫ ========== */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+/* ========== УТИЛИТЫ СБРОСА ========== */
+.reset-margin {
+  margin: 0;
+}
+
+.reset-padding {
+  padding: 0;
+}
+
+.reset-default {
+  margin: 0;
+  padding: 0;
+}
+
+.vkuiPanel__modeNone .vkuiPanel__in, .vkuiPanel__modePlain .vkuiPanel__in {
+    background: var(--vkui--color_background_content);
+}

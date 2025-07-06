@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+RUN npm install -g nodemon
+
+COPY . .
+
+ARG POCKETBASE_BEARER_TOKEN
+ENV POCKETBASE_BEARER_TOKEN=$POCKETBASE_BEARER_TOKEN
+
+EXPOSE 3000
+
+# The source code will be mounted as a volume
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,65 @@
+.debugContainer {
+  min-height: 100vh;
+  background: var(--vkui--color_background);
+}
+
+.jsonSection {
+  margin-bottom: 8px;
+  border: 1px solid var(--vkui--color_separator_primary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.jsonToggle {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--vkui--color_background_secondary);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.jsonToggle:hover {
+  background: var(--vkui--color_background_tertiary);
+}
+
+.jsonToggle:active {
+  background: var(--vkui--color_background_tertiary);
+  transform: scale(0.98);
+}
+
+.jsonTitle {
+  color: var(--vkui--color_text_primary);
+  font-family: var(--vkui--font_family_base);
+}
+
+.jsonContent {
+  padding: 16px;
+  margin: 0;
+  background: var(--vkui--color_background);
+  color: var(--vkui--color_text_primary);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-top: 1px solid var(--vkui--color_separator_primary);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .jsonContent {
+    background: var(--vkui--color_background);
+    color: var(--vkui--color_text_primary);
+  }
+}
+
+/* Make JSON more readable on mobile */
+@media (max-width: 480px) {
+  .jsonContent {
+    font-size: 11px;
+    padding: 12px;
+  }
+}
