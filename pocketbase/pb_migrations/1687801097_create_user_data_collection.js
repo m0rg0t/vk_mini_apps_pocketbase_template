@@ -22,13 +22,10 @@ migrate(
           required: true,
           presentable: false,
           unique: false,
-          options: {
-            collectionId: "vk_users_collection",
-            cascadeDelete: true,
-            minSelect: null,
-            maxSelect: 1,
-            displayFields: null
-          }
+          cascadeDelete: true,
+          collectionId: "vk_users_collection",
+          maxSelect: 1,
+          minSelect: 0
         },
         // data_type - what type of data this is (settings, preferences, etc.)
         {

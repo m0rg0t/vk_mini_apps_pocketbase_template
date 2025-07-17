@@ -4,24 +4,9 @@
  */
 
 // Example of a basic hook - you can add your custom logic here
-onRecordAfterCreateRequest((e) => {
-  // Log when new records are created
-  console.log("New record created:", e.record.tableName(), e.record.id);
-}, "vk_users");
+// Hook functions will be added here once we identify the correct API
 
-onRecordAfterCreateRequest((e) => {
-  // Log when new user data records are created
-  console.log("New user data record created:", e.record.id);
-}, "user_data");
-
-// Example health check endpoint
-routerAdd("GET", "/api/health", (c) => {
-  return c.json(200, {
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    service: "pocketbase"
-  });
-});
+// Health check endpoint removed - PocketBase provides default health endpoint
 
 // Example endpoint for app information
 routerAdd("GET", "/api/app-info", (c) => {

@@ -4,3 +4,5 @@ export { useUserBadges, type UserEarnedBadge, type UserBadgesResponse } from './
 export type { Badge, VKUser, UserData } from '../types';
 export { useVKBannerAds } from './useVKBannerAds';
 export { useInviteFriend } from './useInviteFriend';
+export { useBackendUserBooks, type UserBook, type UseBackendUserBooksResponse } from './useBackendUserBooks';
+export { useDownloadDiary, type UseDownloadDiaryResponse } from './useDownloadDiary';

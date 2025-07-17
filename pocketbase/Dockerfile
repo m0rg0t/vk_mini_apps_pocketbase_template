@@ -39,8 +39,8 @@ RUN mkdir -p $APP_HOME/pb_data $APP_HOME/pb_migrations ${APP_HOME}/pb_public ${A
 # copy the local pb_migrations dir into the correct location
 COPY ./pb_migrations/* $APP_HOME/pb_migrations/
 
-# copy the local pb_public dir into the correct location
-COPY ./pb_public/* $APP_HOME/pb_public/
+# copy the local pb_public dir into the correct location (if it exists and has files)
+COPY ./pb_public $APP_HOME/pb_public/
 
 # Uncomment to copy the local pb_hooks dir into the image
 COPY ./pb_hooks $APP_HOME/pb_hooks
