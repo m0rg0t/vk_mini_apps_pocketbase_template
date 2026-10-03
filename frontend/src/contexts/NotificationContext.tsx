@@ -17,6 +17,8 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+// Context and provider share one module; consumers subscribe to the same instance.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context) {

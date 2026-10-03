@@ -2,7 +2,7 @@ import express from "express";
 import pbFetch from "../utils/pbFetch.js";
 import { POCKETBASE_URL } from "../config.js";
 import { checkEarnedBadges, awardEarnedBadges } from "../utils/badgeChecker.js";
-import { verifyVkSignature, verifyUserAccess } from "../utils/signature.js";
+import { verifyVkSignature, verifyUserAccess, verifyUserBookAccess } from "../utils/signature.js";
 import { checkReadBadges, awardReferralBadge } from "../utils/badgeAwarder.js";
 import {
   validateUserId,
@@ -27,32 +27,42 @@ import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 
-Font.register({
-  family: "Roboto",
-  src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf",
+// A local font path can make production PDF generation independent of a CDN.
+// The explicit built-in Helvetica mode is useful for isolated ASCII smoke tests.
+const pdfFont = process.env.PDF_FONT_FAMILY === 'Helvetica' ? 'Helvetica' : 'Roboto';
+if (pdfFont === 'Roboto') Font.register({
+  family: 'Roboto',
+  src: process.env.PDF_FONT_PATH || 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf',
 });
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: "Roboto" },
+  page: { padding: 40, fontFamily: pdfFont },
   section: { marginBottom: 10 },
   title: {
     fontSize: 16,
     marginBottom: 4,
     fontWeight: "bold",
-    fontFamily: "Roboto",
+    fontFamily: pdfFont,
   },
-  description: { fontSize: 12, marginBottom: 4, fontFamily: "Roboto" },
-  rating: { fontSize: 12, marginBottom: 4, fontFamily: "Roboto" },
+  description: { fontSize: 12, marginBottom: 4, fontFamily: pdfFont },
+  rating: { fontSize: 12, marginBottom: 4, fontFamily: pdfFont },
   review: {
     fontSize: 12,
     marginBottom: 8,
     // fontStyle: "italic",
-    fontFamily: "Roboto",
+    fontFamily: pdfFont,
     whiteSpace: "pre-wrap",
   },
 });
 
 const router = express.Router();
+
+function bookFields(body, includeBookId = false) {
+  const keys = ['status', 'started_reading', 'finished_reading', 'rating', 'review'];
+  if (includeBookId) keys.push('book_id');
+  return Object.fromEntries(keys.filter(key => body[key] !== undefined).map(key => [key, body[key]]));
+}
+
 
 // Get user's books
 router.get("/:userId/books", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
@@ -80,7 +90,7 @@ router.get("/:userId/books", validateUserId(), handleValidationErrors, verifyVkS
 });
 
 // Generate PDF list of user's books (POST method for better security)
-router.get("/:userId/books/pdf", async (req, res) => {
+router.get("/:userId/books/pdf", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     const response = await pbFetch(
       `${POCKETBASE_URL}/api/collections/vk_user_books/records?filter=(user="${req.params.userId}")&expand=book_id&sort=-finished_reading`
@@ -164,7 +174,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
               fontSize: 20,
               marginBottom: 20,
               textAlign: "center",
-              fontFamily: "Roboto",
+              fontFamily: pdfFont,
             },
           },
           "Моя библиотека"
@@ -177,7 +187,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
                   fontSize: 14,
                   textAlign: "center",
                   marginTop: 50,
-                  fontFamily: "Roboto",
+                  fontFamily: pdfFont,
                 },
               },
               "В вашей библиотеке нет книг."
@@ -252,7 +262,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
                 fontSize: 10,
                 textAlign: 'center',
                 marginTop: 5,
-                fontFamily: 'Roboto',
+                fontFamily: pdfFont,
               },
             },
             'Присоединяйтесь к нашему книжному челленджу!'
@@ -308,7 +318,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
 });
 
 // Add book to user's library
-router.post("/:userId/books", verifyVkSignature, async (req, res) => {
+router.post("/:userId/books", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     // Проверяем наличие book_id в запросе
     if (!req.body.book_id) {
@@ -333,8 +343,8 @@ router.post("/:userId/books", verifyVkSignature, async (req, res) => {
     }
 
     const bookData = {
+      ...bookFields(req.body, true),
       user: req.params.userId,
-      ...req.body,
     };
 
     const response = await pbFetch(
@@ -489,6 +499,7 @@ router.put(
   handleValidationErrors,
   verifyVkSignature,
   verifyUserAccess,
+  verifyUserBookAccess,
   async (req, res) => {
     try {
       const response = await pbFetch(
@@ -496,7 +507,7 @@ router.put(
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(req.body),
+          body: JSON.stringify(bookFields(req.body)),
         }
       );
 
@@ -543,6 +554,7 @@ router.delete(
   handleValidationErrors,
   verifyVkSignature,
   verifyUserAccess,
+  verifyUserBookAccess,
   async (req, res) => {
     try {
       const response = await pbFetch(
@@ -568,7 +580,7 @@ router.delete(
 
 // Get user's badges
 // router.get("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, res) => {
-router.get("/:userId/badges", async (req, res) => {
+router.get("/:userId/badges", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     console.log(`[USER BADGES] Fetching badges for user ${req.params.userId}`);
     const url = `${POCKETBASE_URL}/api/collections/vk_user_badges/records?filter=(user="${req.params.userId}")&expand=badge&sort=-earned_at`;
@@ -604,7 +616,7 @@ router.post("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, 
     if (req.body.badge_id) {
       // Manual badge awarding - existing logic
       const existingResponse = await pbFetch(
-        `${POCKETBASE_URL}/api/collections/vk_user_badges/records?filter=(user="${req.params.userId}" && badge_id="${req.body.badge_id}")`
+        `${POCKETBASE_URL}/api/collections/vk_user_badges/records?${new URLSearchParams({ filter: `(${createSafeFilter('user', req.params.userId)} && ${createSafeFilter('badge', req.body.badge_id)})` })}`
       );
       const existingData = await existingResponse.json();
 
@@ -615,7 +627,7 @@ router.post("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, 
       const badgeData = {
         user: req.params.userId,
         earned_at: new Date().toISOString(),
-        ...req.body,
+        badge: req.body.badge_id,
       };
       const response = await pbFetch(
         `${POCKETBASE_URL}/api/collections/vk_user_badges/records`,

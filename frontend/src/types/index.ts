@@ -40,7 +40,7 @@ export interface UserData {
   user: string;
   data_type: string;
   data_key: string;
-  data_value: any;
+  data_value: unknown;
   created: string;
   updated: string;
 }

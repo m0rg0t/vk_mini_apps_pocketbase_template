@@ -18,7 +18,7 @@ export const UserBadgesPanel: FC<UserBadgesPanelProps> = ({ id }) => {
 
   useEffect(() => {
     refetchUserBadges();
-  }, []);
+  }, [refetchUserBadges]);
 
   // Получаем ID бейджей, которые есть у пользователя
   const userBadgeIds = userBadges.map((ub) => ub.badge);

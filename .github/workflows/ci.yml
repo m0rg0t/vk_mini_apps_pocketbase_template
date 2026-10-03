@@ -1,0 +1,43 @@
+name: Isolated template checks
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: backend
+      - run: npm test -- --runInBand --json --outputFile=test-results.json
+        working-directory: backend
+      - run: npm ci --ignore-scripts
+        working-directory: frontend
+      - run: npm run lint && npm run build && npm run test:run -- --reporter=default --reporter=json --outputFile=test-results.json
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run test:browser
+        working-directory: frontend
+      - uses: actions/upload-artifact@v7.0.1
+        if: always()
+        with:
+          name: template-test-results
+          path: |
+            frontend/test-results.json
+            backend/test-results.json
+            frontend/test-results/
+            frontend/playwright-report/
+          if-no-files-found: error

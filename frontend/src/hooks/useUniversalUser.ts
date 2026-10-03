@@ -79,9 +79,6 @@ export const useUniversalUser = (): UniversalUserResponse => {
       first_name: string;
       last_name: string;
       photo_url?: string;
-    } = {
-      first_name: '',
-      last_name: ''
     };
 
     if (platform === 'vk' && 'id' in platformInfo) {

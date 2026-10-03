@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { POCKETBASE_BEARER_TOKEN } from "../config.js";
 
 export default function pbFetch(url, options = {}, { isPublic = false } = {}) {

@@ -7,7 +7,7 @@ import { useUserBadges, useUniversalUser } from '../../hooks';
 import { DEFAULT_VIEW_PANELS } from '../../routes';
 import styles from './Home.module.css';
 
-export interface HomeProps extends NavIdProps { }
+export type HomeProps = NavIdProps;
 
 export const Home: FC<HomeProps> = ({ id }) => {
   const routeNavigator = useRouteNavigator();
@@ -16,7 +16,7 @@ export const Home: FC<HomeProps> = ({ id }) => {
   const { refetchUserBadges } = useUserBadges();
   useEffect(() => {
     refetchUserBadges();
-  }, []);
+  }, [refetchUserBadges]);
 
   return (
     <Panel id={id}>

@@ -67,7 +67,7 @@ export const UserMenuPanel: FC<UserMenuPanelProps> = ({ id }) => {
 
             {/* Debug Panel - показываем всегда, даже при загрузке */}
             <div className={styles.menuSection}>
-              {(import.meta.env.DEV || localStorage.getItem('debug_mode') === 'true' || true) && (
+              {import.meta.env.DEV && (
                 <button
                   className={styles.menuItem}
                   onClick={() =>
@@ -130,11 +130,7 @@ export const UserMenuPanel: FC<UserMenuPanelProps> = ({ id }) => {
             <div className={styles.menuSection}>
               <button
                 className={styles.menuItem}
-                onClick={() =>
-                  routeNavigator.push(
-                    `/${DEFAULT_VIEW_PANELS.PROFILE}/${DEFAULT_VIEW_PANELS.USER_BOOKS}`,
-                  )
-                }
+                disabled title="Раздел пока не реализован"
               >
                 <img src={bookOutlineIcon} alt="" className={styles.menuIcon} />
                 <span className={styles.menuText}>Мои книги</span>
@@ -143,11 +139,7 @@ export const UserMenuPanel: FC<UserMenuPanelProps> = ({ id }) => {
 
               <button
                 className={styles.menuItem}
-                onClick={() =>
-                  routeNavigator.push(
-                    `/${DEFAULT_VIEW_PANELS.PROFILE}/${DEFAULT_VIEW_PANELS.WANT_TO_READ}`,
-                  )
-                }
+                disabled title="Раздел пока не реализован"
               >
                 <img src={likeOutlineIcon} alt="" className={styles.menuIcon} />
                 <span className={styles.menuText}>Хочу прочитать</span>

@@ -9,7 +9,7 @@ export interface DebugPanelProps {
   id: string;
 }
 
-const JsonViewer: FC<{ title: string; data: any; collapsed?: boolean }> = ({ 
+const JsonViewer: FC<{ title: string; data: unknown; collapsed?: boolean }> = ({
   title, 
   data, 
   collapsed = false 

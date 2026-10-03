@@ -331,3 +331,20 @@ VITE_POCKETBASE_URL=https://your-domain.com
 - [Telegram](https://telegram.org/) за Mini Apps платформу
 - [PocketBase](https://pocketbase.io/) за простую и мощную базу данных
 - [React Team](https://react.dev/) за отличный фреймворк
+## Maintenance verification (Node 24)
+
+Use Node 24.15+ and `npm ci --ignore-scripts` independently in `frontend` and `backend`.
+Frontend: `npm run lint`, `npm run build`, `npm run test:run`.
+Backend: `npm test -- --runInBand`. Its test setup blocks external networking, injects only synthetic configuration, and uses the built-in Helvetica font for the isolated PDF transport smoke test. Real Cyrillic PDF rendering still needs a local font (`PDF_FONT_PATH`) or the existing Roboto CDN; it is not proven by this synthetic test.
+
+The maintained stack uses Vite 8 / Vitest 5, React 19, VKUI 8 / Bridge 3, Express 5 / Jest 30 and PocketBase JS 0.28. TypeScript stays on 6.0 because the current typescript-eslint peer range excludes TypeScript 7. Docker installs respect lockfiles and frontend build failures now stop the image build. Supply PocketBase bearer credentials at runtime, never as build arguments.
+
+VK requests now require a valid identity and successful signing on every device and in development. There is no unsigned mobile fallback. Authentication error inspection uses a cloned Response so other errors retain readable bodies. The existing Telegram request contract is kept separate. The template's current platform detector is still hard-coded to VK; this PR does not enable an unverified Telegram production login or introduce automatic mock fallbacks.
+
+Security behavior change: production and an absent `NODE_ENV` always enforce signatures, even if `CHECK_SIGNATURES=false`. Bypass requires both explicit `NODE_ENV=development` (or `test`) and `CHECK_SIGNATURES=false`. Provide `VK_APP_ID` / `VK_SECRET_KEY`; missing configuration returns 503. Signed timestamps must be no older than five minutes or more than 30 seconds in the future. Protected user reads and mutations require verified ownership; failed/missing user lookups and mismatched book ownership never grant access. Debug logs contain no secrets or signatures. Result replay limits, placeholder book loading/download actions and real VK-client behavior still need integration review. Unsupported book navigation is visibly disabled rather than sending users to nonexistent routes.
+
+CI runs only on pull requests with read-only repository permission, no secrets, no database service and no deployment. No PocketBase data or historical migrations are changed. Production/client integration, existing database upgrade behavior and real-client visual smoke tests remain manual gates for this draft. A separate test-only Vite config powers `npm run test:browser`: real Chromium/VKUI at mobile and desktop widths tests signed success, declined signing without a request, retry, and readable error bodies using synthetic local fixtures. Production builds have no mock aliases.
+
+### Telegram compatibility change
+
+Protected Telegram requests now return an explicit 501 before any privileged PocketBase call. The current frontend/API sends only `telegram_user_id` or `telegram-id`, without signed Telegram `initData`; those client-supplied IDs cannot prove identity. Production support requires a separately implemented and verified initData transport/verifier, freshness check and ownership contract. This PR does not claim to implement Telegram authentication, and the existing platform detector remains VK-only. Explicit development/test mode is still available for synthetic fixtures.

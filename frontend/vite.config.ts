@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 /// <reference types="vitest" />
@@ -6,7 +6,7 @@ import legacy from '@vitejs/plugin-legacy';
 function handleModuleDirectivesPlugin() {
   return {
     name: 'handle-module-directives-plugin',
-    transform(code, id) {
+    transform(code: string, id: string) {
       if (id.includes('@vkontakte/icons')) {
         code = code.replace(/"use-client";?/g, '');
       }

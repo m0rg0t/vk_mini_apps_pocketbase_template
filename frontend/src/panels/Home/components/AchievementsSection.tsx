@@ -7,14 +7,14 @@ import { DEFAULT_VIEW_PANELS } from '../../../routes';
 import { declineBadge, declineBook } from '../../../utils/declension';
 import styles from '../Home.module.css';
 
-export interface AchievementsSectionProps {}
+
 
 interface AchievementCardProps {
   loading: boolean;
   count: number;
   icon: React.ReactNode;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const AchievementCard: FC<AchievementCardProps> = ({ loading, count, icon, label, onClick }) => (
@@ -39,7 +39,7 @@ const AchievementCard: FC<AchievementCardProps> = ({ loading, count, icon, label
   </Card>
 );
 
-export const AchievementsSection: FC<AchievementsSectionProps> = () => {
+export const AchievementsSection: FC = () => {
   const routeNavigator = useRouteNavigator();
   const { userBadges, loading: badgesLoading, isFetched: isBadgesFetched } = useUserBadges();
   const { completedBooks, loading: booksLoading, isFetched: isBooksDataFetched } = useBackendUserBooks();
@@ -69,7 +69,7 @@ export const AchievementsSection: FC<AchievementsSectionProps> = () => {
           count={completedBooksCount}
           icon={<Icon24BooksOutline className={styles.achievementIcon} />}
           label={getBooksLabel(completedBooksCount)}
-          onClick={() => routeNavigator.push(`/${DEFAULT_VIEW_PANELS.PROFILE}/${DEFAULT_VIEW_PANELS.USER_BOOKS}`)}
+
         />
         <AchievementCard
           loading={badgesLoading || !isBadgesFetched}
