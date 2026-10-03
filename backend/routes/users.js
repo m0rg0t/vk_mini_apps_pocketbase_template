@@ -57,6 +57,13 @@ const styles = StyleSheet.create({
 
 const router = express.Router();
 
+function bookFields(body, includeBookId = false) {
+  const keys = ['status', 'started_reading', 'finished_reading', 'rating', 'review'];
+  if (includeBookId) keys.push('book_id');
+  return Object.fromEntries(keys.filter(key => body[key] !== undefined).map(key => [key, body[key]]));
+}
+
+
 // Get user's books
 router.get("/:userId/books", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
@@ -336,8 +343,8 @@ router.post("/:userId/books", validateUserId(), handleValidationErrors, verifyVk
     }
 
     const bookData = {
+      ...bookFields(req.body, true),
       user: req.params.userId,
-      ...req.body,
     };
 
     const response = await pbFetch(
@@ -500,7 +507,7 @@ router.put(
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(req.body),
+          body: JSON.stringify(bookFields(req.body)),
         }
       );
 

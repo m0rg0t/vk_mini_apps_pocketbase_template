@@ -56,3 +56,15 @@ it('rejects Telegram client IDs before any privileged request', async () => {
   const res = await request(app).post('/api/vk-users').send({ telegram_user_id: 123, first_name: 'Test' });
   expect(res.status).toBe(501); expect(forbiddenWrite.isDone()).toBe(false);
 });
+it('cannot override owner or persist signed credentials in book creation/update', async () => {
+  nock(base).get('/api/collections/vk_users/records/user1').reply(200, { vk_id: 123 });
+  nock(base).get('/api/collections/vk_user_books/records').query({ filter: '(user="user1" && book_id="book1")' }).reply(200, { items: [] });
+  const create = nock(base).post('/api/collections/vk_user_books/records', { user: 'user1', book_id: 'book1', status: 'reading' }).reply(200, { id: 'record1' });
+  expect((await request(app).post('/api/users/user1/books').send({ ...signed(), user: 'other-user', book_id: 'book1', status: 'reading' })).status).toBe(201);
+  expect(create.isDone()).toBe(true);
+  nock(base).get('/api/collections/vk_users/records/user1').reply(200, { vk_id: 123 });
+  nock(base).get('/api/collections/vk_user_books/records/record1').reply(200, { user: 'user1' });
+  const update = nock(base).patch('/api/collections/vk_user_books/records/record1', { status: 'reading' }).reply(200, { id: 'record1' });
+  expect((await request(app).put('/api/users/user1/books/record1').send({ ...signed(), user: 'other-user', book_id: 'other-book', status: 'reading' })).status).toBe(200);
+  expect(update.isDone()).toBe(true);
+});
