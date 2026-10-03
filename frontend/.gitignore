@@ -34,3 +34,5 @@ coverage
 .pnp.js
 
 build.zip
+playwright-report/
+test-results/

@@ -4,7 +4,7 @@ import ts from '@typescript-eslint/eslint-plugin';
 import hooks from 'eslint-plugin-react-hooks';
 import refresh from 'eslint-plugin-react-refresh';
 export default [
-  { ignores: ['build/**', 'dist/**', 'coverage/**', '.eslintrc.cjs'] },
+  { ignores: ['build/**', 'dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**', '.eslintrc.cjs'] },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: { parser, parserOptions: { ecmaVersion: 'latest', sourceType: 'module' } },

@@ -16,7 +16,9 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:browser": "playwright test",
+    "dev:fixture": "vite --config vite.fixture.config.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.1",
@@ -32,6 +34,8 @@
     "vk-helpers": "^1.0.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -57,8 +61,7 @@
     "terser": "^5.51.2",
     "typescript": "~6.0.3",
     "vite": "^8.3.2",
-    "vitest": "^5.0.3",
-    "@eslint/js": "^10.0.1"
+    "vitest": "^5.0.3"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

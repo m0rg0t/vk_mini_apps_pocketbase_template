@@ -2,7 +2,7 @@ import express from "express";
 import pbFetch from "../utils/pbFetch.js";
 import { POCKETBASE_URL } from "../config.js";
 import { checkEarnedBadges, awardEarnedBadges } from "../utils/badgeChecker.js";
-import { verifyVkSignature, verifyUserAccess } from "../utils/signature.js";
+import { verifyVkSignature, verifyUserAccess, verifyUserBookAccess } from "../utils/signature.js";
 import { checkReadBadges, awardReferralBadge } from "../utils/badgeAwarder.js";
 import {
   validateUserId,
@@ -83,7 +83,7 @@ router.get("/:userId/books", validateUserId(), handleValidationErrors, verifyVkS
 });
 
 // Generate PDF list of user's books (POST method for better security)
-router.get("/:userId/books/pdf", async (req, res) => {
+router.get("/:userId/books/pdf", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     const response = await pbFetch(
       `${POCKETBASE_URL}/api/collections/vk_user_books/records?filter=(user="${req.params.userId}")&expand=book_id&sort=-finished_reading`
@@ -311,7 +311,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
 });
 
 // Add book to user's library
-router.post("/:userId/books", verifyVkSignature, async (req, res) => {
+router.post("/:userId/books", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     // Проверяем наличие book_id в запросе
     if (!req.body.book_id) {
@@ -492,6 +492,7 @@ router.put(
   handleValidationErrors,
   verifyVkSignature,
   verifyUserAccess,
+  verifyUserBookAccess,
   async (req, res) => {
     try {
       const response = await pbFetch(
@@ -546,6 +547,7 @@ router.delete(
   handleValidationErrors,
   verifyVkSignature,
   verifyUserAccess,
+  verifyUserBookAccess,
   async (req, res) => {
     try {
       const response = await pbFetch(
@@ -571,7 +573,7 @@ router.delete(
 
 // Get user's badges
 // router.get("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, res) => {
-router.get("/:userId/badges", async (req, res) => {
+router.get("/:userId/badges", validateUserId(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
     console.log(`[USER BADGES] Fetching badges for user ${req.params.userId}`);
     const url = `${POCKETBASE_URL}/api/collections/vk_user_badges/records?filter=(user="${req.params.userId}")&expand=badge&sort=-earned_at`;

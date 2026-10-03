@@ -1,7 +1,7 @@
 import express from "express";
 import pbFetch from "../utils/pbFetch.js";
 import { POCKETBASE_URL } from "../config.js";
-import { verifyVkSignature } from "../utils/signature.js";
+import { verifyVkSignature, verifyUserAccess } from "../utils/signature.js";
 import PocketBase from "pocketbase";
 import { awardRegistrationBadge } from "../utils/badgeAwarder.js";
 import {
@@ -80,17 +80,7 @@ router.get("/", validateUserFilters(), handleValidationErrors, verifyVkSignature
 });
 
 // Create user (VK or Telegram) - VK users need signature verification
-router.post("/", validateUserData(), handleValidationErrors, (req, res, next) => {
-  // Skip VK signature verification for Telegram users
-  const isTelegramUser = req.body.telegram_user_id && !req.body.vk_id;
-  if (isTelegramUser) {
-    // For Telegram users, skip signature verification and go to handler
-    next();
-  } else {
-    // For VK users, apply signature verification middleware
-    verifyVkSignature(req, res, next);
-  }
-}, async (req, res) => {
+router.post("/", validateUserData(), handleValidationErrors, verifyVkSignature, async (req, res) => {
   try {
     console.log("creating user");
 
@@ -149,17 +139,7 @@ router.post("/", validateUserData(), handleValidationErrors, (req, res, next) =>
 });
 
 // Update user (VK or Telegram) - VK users need signature verification
-router.put("/:id", validateId("id"), validateUserData(), handleValidationErrors, (req, res, next) => {
-  // Skip VK signature verification for Telegram users
-  const isTelegramUser = req.body.telegram_user_id && !req.body.vk_id;
-  if (isTelegramUser) {
-    // For Telegram users, skip signature verification and go to handler
-    next();
-  } else {
-    // For VK users, apply signature verification middleware
-    verifyVkSignature(req, res, next);
-  }
-}, async (req, res) => {
+router.put("/:id", validateId("id"), validateUserData(), handleValidationErrors, verifyVkSignature, verifyUserAccess, async (req, res) => {
   try {
 
     // Prepare validated payload

@@ -27,6 +27,10 @@ jobs:
         working-directory: frontend
       - run: npm run lint && npm run build && npm run test:run -- --reporter=default --reporter=json --outputFile=test-results.json
         working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run test:browser
+        working-directory: frontend
       - uses: actions/upload-artifact@v7.0.1
         if: always()
         with:
@@ -34,4 +38,6 @@ jobs:
           path: |
             frontend/test-results.json
             backend/test-results.json
+            frontend/test-results/
+            frontend/playwright-report/
           if-no-files-found: error
