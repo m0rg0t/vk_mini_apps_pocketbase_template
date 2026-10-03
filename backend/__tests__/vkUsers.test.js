@@ -35,7 +35,7 @@ describe('VK Users API', () => {
     const user = { vk_id: 789, first_name: 'Test' };
     const created = { id: '2', ...user };
     nock(POCKETBASE_URL)
-      .post('/api/collections/vk_users/records', user)
+      .post('/api/collections/vk_users/records', { ...user, last_name: '', photo_url: '' })
       .reply(200, created);
 
     const res = await request(app).post('/api/vk-users').send(user);

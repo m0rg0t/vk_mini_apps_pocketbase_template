@@ -27,27 +27,30 @@ import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 
-Font.register({
-  family: "Roboto",
-  src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf",
+// A local font path can make production PDF generation independent of a CDN.
+// The explicit built-in Helvetica mode is useful for isolated ASCII smoke tests.
+const pdfFont = process.env.PDF_FONT_FAMILY === 'Helvetica' ? 'Helvetica' : 'Roboto';
+if (pdfFont === 'Roboto') Font.register({
+  family: 'Roboto',
+  src: process.env.PDF_FONT_PATH || 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf',
 });
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: "Roboto" },
+  page: { padding: 40, fontFamily: pdfFont },
   section: { marginBottom: 10 },
   title: {
     fontSize: 16,
     marginBottom: 4,
     fontWeight: "bold",
-    fontFamily: "Roboto",
+    fontFamily: pdfFont,
   },
-  description: { fontSize: 12, marginBottom: 4, fontFamily: "Roboto" },
-  rating: { fontSize: 12, marginBottom: 4, fontFamily: "Roboto" },
+  description: { fontSize: 12, marginBottom: 4, fontFamily: pdfFont },
+  rating: { fontSize: 12, marginBottom: 4, fontFamily: pdfFont },
   review: {
     fontSize: 12,
     marginBottom: 8,
     // fontStyle: "italic",
-    fontFamily: "Roboto",
+    fontFamily: pdfFont,
     whiteSpace: "pre-wrap",
   },
 });
@@ -164,7 +167,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
               fontSize: 20,
               marginBottom: 20,
               textAlign: "center",
-              fontFamily: "Roboto",
+              fontFamily: pdfFont,
             },
           },
           "Моя библиотека"
@@ -177,7 +180,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
                   fontSize: 14,
                   textAlign: "center",
                   marginTop: 50,
-                  fontFamily: "Roboto",
+                  fontFamily: pdfFont,
                 },
               },
               "В вашей библиотеке нет книг."
@@ -252,7 +255,7 @@ router.get("/:userId/books/pdf", async (req, res) => {
                 fontSize: 10,
                 textAlign: 'center',
                 marginTop: 5,
-                fontFamily: 'Roboto',
+                fontFamily: pdfFont,
               },
             },
             'Присоединяйтесь к нашему книжному челленджу!'
@@ -604,7 +607,7 @@ router.post("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, 
     if (req.body.badge_id) {
       // Manual badge awarding - existing logic
       const existingResponse = await pbFetch(
-        `${POCKETBASE_URL}/api/collections/vk_user_badges/records?filter=(user="${req.params.userId}" && badge_id="${req.body.badge_id}")`
+        `${POCKETBASE_URL}/api/collections/vk_user_badges/records?${new URLSearchParams({ filter: `(${createSafeFilter('user', req.params.userId)} && ${createSafeFilter('badge', req.body.badge_id)})` })}`
       );
       const existingData = await existingResponse.json();
 
@@ -615,7 +618,7 @@ router.post("/:userId/badges", verifyVkSignature, verifyUserAccess, async (req, 
       const badgeData = {
         user: req.params.userId,
         earned_at: new Date().toISOString(),
-        ...req.body,
+        badge: req.body.badge_id,
       };
       const response = await pbFetch(
         `${POCKETBASE_URL}/api/collections/vk_user_badges/records`,

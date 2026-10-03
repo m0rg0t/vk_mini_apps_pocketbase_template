@@ -24,6 +24,7 @@ describe('Users API', () => {
     it('should add book to user library', async () => {
       const body = { book_id: 'b1', status: 'reading' };
       const created = { id: 'ub2', user: 'user1', ...body };
+      nock(POCKETBASE_URL).get('/api/collections/vk_user_books/records').query({ filter: '(user="user1" && book_id="b1")' }).reply(200, { items: [] });
       nock(POCKETBASE_URL)
         .post('/api/collections/vk_user_books/records', (reqBody) => reqBody.user === 'user1')
         .reply(200, created);
@@ -65,7 +66,7 @@ describe('Users API', () => {
       const res = await request(app)
         .post('/api/users/user1/books/b2')
         .send(payload);
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
       expect(res.body).toEqual(created);
     });
 
@@ -101,7 +102,7 @@ describe('Users API', () => {
       }];
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_books/records')
-        .query({ filter: '(vk_user_id="user1")', expand: 'book_id', sort: '-finished_reading' })
+        .query({ filter: '(user="user1")', expand: 'book_id', sort: '-finished_reading' })
         .reply(200, { items });
 
       const res = await request(app).get('/api/users/user1/books/pdf');
@@ -116,7 +117,7 @@ describe('Users API', () => {
       const items = [{ id: 'cb1' }];
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_badges/records')
-        .query({ filter: '(vk_user_id="user1")', expand: 'badge_id', sort: '-earned_at' })
+        .query({ filter: '(user="user1")', expand: 'badge', sort: '-earned_at' })
         .reply(200, { items });
 
       const res = await request(app).get('/api/users/user1/badges');
@@ -127,12 +128,12 @@ describe('Users API', () => {
     it('should award a badge to user', async () => {
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_badges/records')
-        .query({ filter: '(vk_user_id="user1" && badge_id="badge1")' })
+        .query({ filter: '(user="user1" && badge="badge1")' })
         .reply(200, { items: [] });
       const badgeData = { badge_id: 'badge1' };
       const reply = { id: 'ubg1', vk_user_id: 'user1', ...badgeData };
       nock(POCKETBASE_URL)
-        .post('/api/collections/vk_user_badges/records', (reqBody) => reqBody.badge_id === 'badge1')
+        .post('/api/collections/vk_user_badges/records', (reqBody) => reqBody.badge === 'badge1')
         .reply(200, reply);
 
       const res = await request(app)
@@ -143,7 +144,7 @@ describe('Users API', () => {
     });    it('should not award duplicate badge', async () => {
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_badges/records')
-        .query({ filter: '(vk_user_id="user1" && badge_id="badge1")' })
+        .query({ filter: '(user="user1" && badge="badge1")' })
         .reply(200, { items: [{ id: 'ubg1' }] });
       const res = await request(app)
         .post('/api/users/user1/badges')
@@ -169,7 +170,7 @@ describe('Users API', () => {
         .reply(200, { items: badges });
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_badges/records')
-        .query({ filter: '(vk_user_id="user1")' })
+        .query({ filter: '(user="user1")' })
         .reply(200, { items: [] });
       
       // Mock awarding badges
@@ -204,7 +205,7 @@ describe('Users API', () => {
         .reply(200, { items: badges });
       nock(POCKETBASE_URL)
         .get('/api/collections/vk_user_badges/records')
-        .query({ filter: '(vk_user_id="user1")' })
+        .query({ filter: '(user="user1")' })
         .reply(200, { items: [] });
 
       const res = await request(app).get('/api/users/user1/badges/check');
@@ -224,11 +225,11 @@ describe('Users API', () => {
   //     const currentYear = new Date().getFullYear();
   //     nock(POCKETBASE_URL)
   //       .get('/api/collections/vk_user_books/records')
-  //       .query({ filter: `(vk_user_id="user1" && status="completed" && finished_reading >= "${currentYear}-01-01")` })
+  //       .query({ filter: `(user="user1" && status="completed" && finished_reading >= "${currentYear}-01-01")` })
   //       .reply(200, { items: [1, 2, 3] });
   //     nock(POCKETBASE_URL)
   //       .get('/api/collections/vk_user_badges/records')
-  //       .query({ filter: '(vk_user_id="user1")' })
+  //       .query({ filter: '(user="user1")' })
   //       .reply(200, { items: [1] });
 
   //     const res = await request(app).get('/api/users/user1/stats');

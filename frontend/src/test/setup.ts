@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Mock VK Bridge для тестов
-(global as any).vkBridge = {
+(globalThis as any).vkBridge = {
   send: vi.fn(),
   subscribe: vi.fn(),
   unsubscribe: vi.fn(),

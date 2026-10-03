@@ -1,14 +1,12 @@
 # Use official Node.js image
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
-COPY package.json ./
-RUN npm install --production
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts
 COPY . .
 ARG PORT=3000
 ENV PORT=$PORT
 ARG POCKETBASE_URL
 ENV POCKETBASE_URL=$POCKETBASE_URL
-ARG POCKETBASE_BEARER_TOKEN
-ENV POCKETBASE_BEARER_TOKEN=$POCKETBASE_BEARER_TOKEN
 EXPOSE $PORT
 CMD ["npm", "start"]

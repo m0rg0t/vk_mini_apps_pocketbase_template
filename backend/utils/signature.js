@@ -40,30 +40,9 @@ function createVerificationParams(vk_id, sign, ts) {
 }
 
 // Debug logging helper
-function logDebugInfo(vk_id, sign, ts, isValid, error) {
-  console.log('🔐 Signature verification (DEBUG MODE):');
-  console.log('  Config:', {
-    CHECK_SIGNATURES: CHECK_SIGNATURES,
-    VK_APP_ID: VK_APP_ID,
-    VK_SECRET_KEY: VK_SECRET_KEY ? `[PROVIDED] ${VK_SECRET_KEY}` : '[MISSING]'
-  });
-  console.log('  Request data:', {
-    vk_id,
-    sign: sign ? `[PROVIDED] ${sign}` : '[MISSING]',
-    ts
-  });
-  
-  if (vk_id && sign && ts) {
-    if (error) {
-      console.log('  Result: ❌ ERROR -', error);
-    } else {
-      console.log('  Result:', isValid ? '✅ VALID' : '❌ INVALID');
-    }
-  } else {
-    console.log('  Result: ⚠️ Missing signature data - would fail in production');
-  }
-  
-  console.log('  Action: 🚀 Proceeding without signature check (debug mode)');
+function logDebugInfo() {
+  // Do not log app secrets, user identity, timestamps or signatures.
+  console.warn('VK signature checks are explicitly disabled');
 }
 
 // Main verification function
@@ -91,6 +70,10 @@ export async function verifyVkSignature(req, res, next) {
 
     logDebugInfo(vk_id, sign, ts, isValid, error);
     return next();
+  }
+
+  if (!VK_APP_ID || !VK_SECRET_KEY) {
+    return res.status(503).json({ error: 'VK authentication is not configured' });
   }
 
   // Production mode - enforce signature verification

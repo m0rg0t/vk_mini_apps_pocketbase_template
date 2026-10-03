@@ -1,5 +1,5 @@
 # Этап сборки
-FROM node:20-alpine as build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm install
+RUN npm ci --ignore-scripts
 
 # Копируем исходный код
 COPY . ./
@@ -19,7 +19,7 @@ ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 ENV VITE_POCKETBASE_URL=$VITE_POCKETBASE_URL
 
 # Собираем проект с учетом переменных окружения
-RUN npm run build && ls -la /app/build || echo "Build failed - build directory not created"
+RUN npm run build
 
 # Этап запуска
 FROM nginx:alpine

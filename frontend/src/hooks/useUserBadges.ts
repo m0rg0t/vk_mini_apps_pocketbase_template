@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { API_ENDPOINTS } from '../consts';
 import { useNotifications } from '../contexts/NotificationContext';
 import type { Badge } from '../types';
@@ -188,9 +188,9 @@ export const useUserBadges = (): UserBadgesResponse => {
     await refetchBadgesQuery();
   };
 
-  const refetchUserBadges = async () => {
+  const refetchUserBadges = useCallback(async () => {
     await refetchUserBadgesQuery();
-  };
+  }, [refetchUserBadgesQuery]);
 
   // Check for new badges and show notifications
   useEffect(() => {

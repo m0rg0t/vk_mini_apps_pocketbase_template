@@ -23,7 +23,7 @@ export const BadgeToast: React.FC = () => {
   return (
     <Snackbar
       placement='top'
-      onClose={() => dismissNotification(currentNotification.id)}
+      onClosed={() => dismissNotification(currentNotification.id)}
       onClick={handleClick}
       before={
         <Avatar size={24} style={{ backgroundColor: '#4CAF50' }}>

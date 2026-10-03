@@ -1,14 +1,15 @@
 import { jest } from "@jest/globals";
-import { checkEarnedBadges, awardEarnedBadges } from "../utils/badgeChecker.js";
 
 // Mock pbFetch used in badgeChecker
 const mockFetch = jest.fn();
-jest.mock("../utils/pbFetch.js", () => ({ default: mockFetch }));
+jest.unstable_mockModule("../utils/pbFetch.js", () => ({ default: mockFetch }));
 
 // Mock config
-jest.mock("../config.js", () => ({
+jest.unstable_mockModule("../config.js", () => ({
   POCKETBASE_URL: "http://localhost:8090"
 }));
+
+const { checkEarnedBadges, awardEarnedBadges } = await import("../utils/badgeChecker.js");
 
 describe("badgeChecker", () => {
   beforeEach(() => {
@@ -96,8 +97,8 @@ describe("badgeChecker", () => {
       ];
 
       const userBadges = [
-        { badge_id: "badge1" },
-        { badge_id: "badge2" }
+        { badge: "badge1" },
+        { badge: "badge2" }
       ];
 
       mockFetch

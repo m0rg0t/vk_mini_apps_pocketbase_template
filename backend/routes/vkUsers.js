@@ -6,6 +6,7 @@ import PocketBase from "pocketbase";
 import { awardRegistrationBadge } from "../utils/badgeAwarder.js";
 import {
   validateVkId,
+  validateId,
   validateUserId,
   validateUserData,
   validateUserFilters,
@@ -148,7 +149,7 @@ router.post("/", validateUserData(), handleValidationErrors, (req, res, next) =>
 });
 
 // Update user (VK or Telegram) - VK users need signature verification
-router.put("/:id", validateUserId(), validateUserData(), handleValidationErrors, (req, res, next) => {
+router.put("/:id", validateId("id"), validateUserData(), handleValidationErrors, (req, res, next) => {
   // Skip VK signature verification for Telegram users
   const isTelegramUser = req.body.telegram_user_id && !req.body.vk_id;
   if (isTelegramUser) {

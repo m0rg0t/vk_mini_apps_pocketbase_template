@@ -9,114 +9,62 @@ interface AuthenticatedFetchOptions {
   userId?: string;
 }
 
-/**
- * Выполняет аутентифицированный запрос с подписью VK для платформы VK
- * Для Telegram платформы выполняет обычный запрос без подписи
- */
+/** VK requests fail closed. Telegram keeps its existing separate request contract. */
 export const authenticatedFetch = async (
-  url: string, 
+  url: string,
   options: AuthenticatedFetchOptions = {}
 ): Promise<Response> => {
   const platform = detectPlatform();
-  const { method = 'GET', headers = {}, body, vkId } = options;
-
+  const { headers = {}, body, vkId } = options;
+  const method = (options.method ?? 'GET').toUpperCase();
   const requestOptions: RequestInit = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
   };
 
-  // Добавляем подпись для VK платформы
-  if (platform === 'vk' && vkId) {
-    try {
-      let bodyData: Record<string, unknown> = {};
-      
-      // Если есть тело запроса, парсим его
-      if (body) {
-        bodyData = JSON.parse(body);
-      }
-      
-      // Создаем подпись только для vk_id (как на бэке)
-      const signParams = {
-        vk_id: String(vkId)
-      };
-      
-      const hash = await getHashForParamsFromVK(signParams);
-      
-      // Для GET запросов добавляем подпись в query параметры
-      if (method === 'GET') {
-        const urlObj = new URL(url);
-        urlObj.searchParams.append('sign', hash.sign);
-        urlObj.searchParams.append('ts', String(hash.ts));
-        urlObj.searchParams.append('vk_id', String(vkId));
-        url = urlObj.toString();
-      } else {
-        // Для POST/PUT запросов добавляем подпись в тело
-        const signedBody = {
-          ...bodyData,
-          sign: hash.sign,
-          ts: hash.ts,
-          vk_id: vkId,
-        };
-        requestOptions.body = JSON.stringify(signedBody);
-      }
-    } catch (error) {
-      console.error('Не удалось создать подпись для VK:', error);
-      
-      // Добавляем дополнительную информацию для диагностики на мобильных
-      console.error('Mobile debugging info:', {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      });
-      
-      // В production режиме продолжаем без подписи на мобильных устройствах
-      const isMobile = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
-      if (process.env.NODE_ENV === 'production' && !isMobile) {
-        throw new Error(`VK signature generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
-      
-      // На мобильных или в development режиме продолжаем без подписи
-      console.warn('Продолжаем без подписи (mobile device or development mode)');
-      if (body) {
-        requestOptions.body = body;
-      }
+  if (platform === 'vk') {
+    if (!Number.isSafeInteger(vkId) || !vkId || vkId <= 0) {
+      throw new Error('VK identity is required');
     }
-  } else {
-    // Для Telegram или когда VK ID недоступен
-    if (platform === 'vk' && !vkId) {
-      console.warn('На VK платформе, но VK ID недоступен - запрос будет отправлен без подписи');
-    }
-    
+    let bodyData: Record<string, unknown> = {};
     if (body) {
-      requestOptions.body = body;
+      const parsed: unknown = JSON.parse(body);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('VK request body must be a JSON object');
+      }
+      bodyData = parsed as Record<string, unknown>;
     }
+    // Do not downgrade to unsigned requests on mobile, development, or Bridge failure.
+    const hash = await getHashForParamsFromVK({ vk_id: String(vkId) });
+    if (!hash || typeof hash.sign !== 'string' || !hash.sign || !Number.isFinite(Number(hash.ts)) || Number(hash.ts) <= 0) {
+      throw new Error('VK signature generation failed');
+    }
+    if (method === 'GET' || method === 'HEAD') {
+      const signedUrl = new URL(url, window.location.href);
+      signedUrl.searchParams.set('sign', hash.sign);
+      signedUrl.searchParams.set('ts', String(hash.ts));
+      signedUrl.searchParams.set('vk_id', String(vkId));
+      url = signedUrl.toString();
+    } else {
+      requestOptions.body = JSON.stringify({ ...bodyData, sign: hash.sign, ts: hash.ts, vk_id: vkId });
+    }
+  } else if (platform === 'telegram') {
+    if (body) requestOptions.body = body;
+  } else {
+    throw new Error('Unsupported authentication platform');
   }
 
   const response = await fetch(url, requestOptions);
-  
-  // Специальная обработка ошибок аутентификации
-  if (response.status === 400 || response.status === 401 || response.status === 403) {
+  if ([400, 401, 403].includes(response.status)) {
+    let message: unknown;
     try {
-      const errorData = await response.json();
-      if (errorData.error && (
-        errorData.error.includes('Signature') || 
-        errorData.error.includes('signature') ||
-        errorData.error.includes('authentication') ||
-        errorData.error.includes('unauthorized')
-      )) {
-        throw new Error(`Authentication failed: ${errorData.error}`);
-      }
-    } catch (parseError) {
-      // Если не удалось распарсить ошибку, выбрасываем общую ошибку аутентификации
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(`Authentication failed: ${response.status} ${response.statusText}`);
-      }
+      const data: unknown = await response.clone().json();
+      if (data && typeof data === 'object' && 'error' in data) message = data.error;
+    } catch { /* Preserve the original body for callers, including non-JSON errors. */ }
+    if (response.status === 401 || response.status === 403 ||
+        (typeof message === 'string' && /signature|authentication|unauthorized/i.test(message))) {
+      throw new Error(`Authentication failed: ${response.status} ${response.statusText}`);
     }
   }
-  
   return response;
 };
